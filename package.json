@@ -1,0 +1,28 @@
+{
+  "name": "particle-processing-rk",
+  "version": "0.0.1",
+  "description": "Helper for using Particle IoT devices with OpenProcessing p5.js",
+  "main": "particleHelper.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rickkas7/particle-processing-rk.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rickkas7/particle-processing-rk/issues"
+  },
+  "homepage": "https://github.com/rickkas7/particle-processing-rk#readme",
+  "devDependencies": {
+    "webpack": "^5.88.2",
+    "webpack-cli": "^5.1.4"
+  },
+  "dependencies": {
+    "particle-api-js": "^9.4.1"
+  }
+}
