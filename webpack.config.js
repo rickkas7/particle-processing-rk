@@ -7,11 +7,11 @@ module.exports = {
   output: {
     filename: 'particle-processing-rk.js',
     path: path.resolve(__dirname, 'dist'),
+    library: 'particleHelper',
+    libraryTarget: 'umd',
+    umdNamedDefine: true
   },
   plugins: [
-    new webpack.ProvidePlugin({
-        'particleHelper': 'particleHelper'
-    }),
   ],
   resolve: {
     fallback: { 
