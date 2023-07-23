@@ -1,18 +1,25 @@
 const Particle = require('particle-api-js');
 
-let particleHelper = {};
+let particleHelper = {
+    settingsKey: 'particleSettings',
+    tokenDuration: 4 * 3600, // in seconds, default = 4 hours
+    foregroundColor: '#e0e0e0',
+    top: 5,
+    left: 5,
+    labels: {
+        username: 'Username',
+        password: 'Password',
+        mfaToken: 'MFA Token',
+        loginButton: 'Login',
+        logoutButton: 'Logout',
+        loggedInAs: 'Logged in as',
+    },
+    lineExtra: 8,
+};
 
 // https://p5js.org/reference/
 particleHelper.particle = new Particle();
 
-particleHelper.settingsKey = 'particleSettings';
-
-particleHelper.tokenDuration = 4 * 3600; // in seconds, default = 4 hours
-
-particleHelper.foregroundColor = '#e0e0e0';
-
-particleHelper.top = 0;
-particleHelper.left = 0;
 
 particleHelper.logoutHandler = async function () {
     await particleHelper.particle.deleteCurrentAccessToken({
@@ -26,25 +33,36 @@ particleHelper.logoutHandler = async function () {
 };
 
 particleHelper.showLogout = function () {
-    particleHelper.logoutButton = createButton('Logout');
-    particleHelper.logoutButton.position(particleHelper.left + 5, particleHelper.top + 5);
+    particleHelper.logoutButton = createButton(particleHelper.labels.logoutButton);
+    particleHelper.logoutButton.position(particleHelper.left, particleHelper.top);
     particleHelper.logoutButton.mousePressed(particleHelper.logoutHandler);
 
+    const ascent = textAscent() / displayDensity();
+
     fill(particleHelper.foregroundColor);
-    text('Logged in as ' + particleHelper.settings.username, particleHelper.left + 75, particleHelper.top + 20);
+    text(particleHelper.labels.loggedInAs + ' ' + particleHelper.settings.username, particleHelper.left + 70, particleHelper.top + ascent);
 
 };
 
 particleHelper.showMfa = function () {
+    const ascent = textAscent() / displayDensity();
+    const lineHeight = (textAscent() + textDescent()) / displayDensity() + particleHelper.lineExtra;
+
+    const labelWidth = textWidth(particleHelper.labels.mfaToken) + 5;
+
+    let top = particleHelper.top;
+
     fill(particleHelper.foregroundColor);
-    text('MFA Token', particleHelper.left + 5, particleHelper.top + 20);
+    text(particleHelper.labels.mfaToken, particleHelper.left, top + ascent);
 
+        
     particleHelper.mfaInput = createInput('');
-    particleHelper.mfaInput.position(particleHelper.left + 70, particleHelper.top + 5);
+    particleHelper.mfaInput.position(particleHelper.left + labelWidth, top);
     particleHelper.mfaInput.size(100);
+    top += lineHeight;
 
-    particleHelper.loginButton = createButton('Login');
-    particleHelper.loginButton.position(particleHelper.left + 5, particleHelper.top + 35);
+    particleHelper.loginButton = createButton(particleHelper.labels.loginButton);
+    particleHelper.loginButton.position(particleHelper.left, top);
     particleHelper.loginButton.mousePressed(particleHelper.loginHandler);
 };
 
@@ -100,8 +118,8 @@ particleHelper.loginHandler = async function () {
 // Call this from setup()
 particleHelper.setup = async function () {
     particleHelper.settings = getItem(particleHelper.settingsKey);
-    if (typeof particleHelper.settings == 'object') {
-        console.log('particleHelper.settings', particleHelper.settings);
+    if (particleHelper.settings && typeof particleHelper.settings == 'object') {
+        // console.log('particleHelper.settings', particleHelper.settings);
 
         try {
             particleHelper.userInfo = await particleHelper.particle.getUserInfo({
@@ -119,38 +137,110 @@ particleHelper.setup = async function () {
         }
     }
 
+    if (!particleHelper.settings) {
+        particleHelper.settings = {};
+    }
+
+
     if (!particleHelper.settings.username) {
+
+        const ascent = textAscent() / displayDensity();
+        const lineHeight = (textAscent() + textDescent()) / displayDensity() + particleHelper.lineExtra;
+
+
+        const labelWidth = Math.max(
+            textWidth(particleHelper.labels.username), 
+            textWidth(particleHelper.labels.password)) + 5;
+
+        let top = particleHelper.top;
+
         fill(particleHelper.foregroundColor);
-        text('Username', particleHelper.left + 5, particleHelper.top + 20);
+        text(particleHelper.labels.username, particleHelper.left, top + ascent);
 
         particleHelper.userInput = createInput('');
-        particleHelper.userInput.position(particleHelper.left + 70, particleHelper.top + 5);
+        particleHelper.userInput.position(particleHelper.left + labelWidth, top);
         particleHelper.userInput.size(150);
         // particleHelper.userInput.input(myInputEvent);
+        top += lineHeight;
 
-        text('Password', 5, 50);
+        text(particleHelper.labels.password, particleHelper.left, top + ascent);
         particleHelper.passInput = createInput('', 'password');
-        particleHelper.passInput.position(particleHelper.left + 70, particleHelper.top + 35);
+        particleHelper.passInput.position(particleHelper.left + labelWidth, top);
         particleHelper.passInput.size(150);
+        top += lineHeight;
 
-        particleHelper.loginButton = createButton('Login');
-        particleHelper.loginButton.position(particleHelper.left + 5, particleHelper.top + 65);
+        particleHelper.loginButton = createButton(particleHelper.labels.loginButton);
+        particleHelper.loginButton.position(particleHelper.left, top);
         particleHelper.loginButton.mousePressed(particleHelper.loginHandler);
     }
 };
 
-particleHelper.callFunction = async function({deviceId, name, argument}) {
-    return await particleHelper.particle.callFunction({
+particleHelper.callFunction = async function({deviceId, name, argument, callback = null}) {
+    if (!deviceId) {
+        deviceId = particleHelper.deviceId;
+    }
+    if (!argument) {
+        argument = '';
+    }
+
+    const res = await particleHelper.particle.callFunction({
         deviceId,
         name,
         argument,
         auth: particleHelper.settings.access_token,
     });
+
+    // console.log('callFunction', res);
+
+    /*
+    { 
+        "body": {
+            "id": "<device_id>",
+            "name": "<device_name>",
+            "connected": true,
+            "return_value": 0
+        },
+        "statusCode": 200
+    */
+    
+    if (callback && res.statusCode == 200) {
+        callback(res.body.return_value);
+    }
+    
+
+    return res;
 }
 
-// getVariable
+particleHelper.getVariable = async function({deviceId, name, callback = null}) {
+    if (!deviceId) {
+        deviceId = particleHelper.deviceId;
+    }
 
-// publishEvent
+    const res = await particleHelper.particle.getVariable({
+        deviceId,
+        name,
+        auth: particleHelper.settings.access_token,
+    });
+
+    // console.log('getVariable', res);
+    
+    if (callback && res.statusCode == 200) {
+        callback(res.body.result);
+    }
+    
+
+    return res;
+}
+
+particleHelper.publishEvent = async function({name, data = ''}) {
+    const res = await particleHelper.particle.publishEvent({
+        name,
+        data,
+        auth: particleHelper.settings.access_token,
+    });
+
+    console.log('publishEvent', res);   
+}
 
 particleHelper.selectDevice = async function(options = {}) {
     if (typeof options.left == 'undefined') {
@@ -160,11 +250,24 @@ particleHelper.selectDevice = async function(options = {}) {
         options.top = particleHelper.top + 30;
     }
 
+    let left = options.left;
+
+    if (options.label) {
+        fill(particleHelper.foregroundColor);
+
+        text(options.label, left, options.top + textAscent() / displayDensity());
+        left += textWidth(options.label) + 5;
+    }
+
     const sel = createSelect();
 
     const deviceList = await particleHelper.particle.listDevices({auth: particleHelper.settings.access_token});
 
-    sel.position(options.left, options.top);
+    if (deviceList.body.length > 0) {
+        particleHelper.deviceId = deviceList.body[0].id;
+    }
+
+    sel.position(left, options.top);
     for(const device of deviceList.body) {
         const name = device.name || device.id;
 
