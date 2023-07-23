@@ -14,6 +14,8 @@ The library provides convenient helpers for selecting a device from the logged i
 
 It also provides access to the full particle-api-js in case you want to use more advanced features.
 
+This library assumes you are using OpenProcessing in [p5js](https://p5js.org/reference/) mode.
+
 ## Function Publish Demo
 
 This is a demo of using login, device selector, function, publish, and variable features.
