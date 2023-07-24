@@ -1,6 +1,6 @@
 {
   "name": "particle-processing-rk",
-  "version": "0.0.1",
+  "version": "0.0.5",
   "description": "Helper for using Particle IoT devices with OpenProcessing p5.js",
   "main": "particleHelper.js",
   "scripts": {
@@ -13,7 +13,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/rickkas7/particle-processing-rk/issues"
   },

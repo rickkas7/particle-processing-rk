@@ -2,7 +2,9 @@ function setup() {
     createCanvas(windowWidth, windowHeight);
     background('#202020');
 
-    // Add the particle-processing-rk.js to add the particleHelper global object
+    // Add the library:
+    // https://cdn.jsdelivr.net/npm/particle-processing-rk/dist/particle-processing-rk.js
+    // to add the particleHelper global object
     particleHelper.setup();
 }
 

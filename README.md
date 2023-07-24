@@ -2,6 +2,9 @@
 
 *Helper for using Particle IoT devices with OpenProcessing p5.js*
 
+- Repository: https://github.com/rickkas7/particle-processing-rk
+- License: MIT
+
 [OpenProcessing](https://openprocessing.org/) is often used for graphics programming, but you can also use it to interact with your [Particle](https://particle.io/) IoT devices over the cloud!
 
 One problem with using the Particle API (via particle-api-js) is that you need a Particle access token. Pasting the access token into your source code is bad practice. Also, with OpenProcessing is that sketches are public, except for paid tiers, and that means anyone who views your sketch has full control of your Particle account. Not good!
@@ -22,8 +25,9 @@ This is a demo of using login, device selector, function, publish, and variable 
 
 - Flash your Particle device with the code in firmware/function-publish.cpp.
 - Create a new sketch from the source in sketches/function-publish.js.
-- Add the particle-processing-rk library to your sketch.
+- Add the library https://cdn.jsdelivr.net/npm/particle-processing-rk/dist/particle-processing-rk.js to your sketch.
 - Run it!
+
 
 ## Helper API
 
@@ -63,6 +67,6 @@ Some values you may want to update:
 
 ## Release Notes
 
-### 0.0.1 (2023-07012)
+### 0.0.5 (2023-07-24)
 
 - Initial version
